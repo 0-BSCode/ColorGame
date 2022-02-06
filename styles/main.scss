@@ -1,0 +1,115 @@
+@use 'colors';
+
+*,
+*::before,
+*::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    font-size: 10px;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+}
+
+.title {
+    font-size: 4rem;
+    text-align: center;
+    margin-top: 3rem;
+    width: 100%;
+}
+
+.board {
+    background-color: blue;
+    width: 30%;
+    margin: auto;
+    height: 55rem;
+    border-radius: 3rem;
+    display: grid;
+    grid-template-rows: 10% auto;
+
+    &__header {
+        border-top-right-radius: inherit;
+        border-top-left-radius: inherit;
+        background-color: red;
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    &__circle-list {
+        width: 80%;
+        position: relative;
+        left: 40%;
+        align-self: center;
+        justify-content: center;
+        list-style-type: none;
+        display: inline;
+    }
+
+    &__big-circle {
+        display: inline-block;
+        height: 3.5rem;
+        width: 3.5rem;
+        border-radius: 50%;
+        background-color: yellow;
+        margin: 0 1rem;
+    }
+}
+
+.colors {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    align-self: center;
+
+    &__item {
+        display: inline;
+        margin: 1rem 2rem;
+    }
+
+    &__btn {
+        height: 4rem;
+        width: 4rem;
+        border-radius: 50%;
+        border: 1px solid black;
+    
+        &--red {
+            background-color: colors.$red;
+        }
+
+        &--green {
+            background-color: colors.$green;
+        }
+
+        &--pink {
+            background-color: colors.$pink;
+        }
+
+        &--yellow {
+            background-color: colors.$yellow;
+        }
+
+        &--blue {
+            background-color: colors.$blue;
+        }
+
+        &--orange {
+            background-color: colors.$orange;
+        }
+    
+        &:hover {
+            box-shadow: 0 0 0.5rem 0.1rem black;
+        }
+
+        &:active {
+            opacity: 0.7;
+        }
+    }
+}
