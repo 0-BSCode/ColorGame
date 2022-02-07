@@ -80,7 +80,6 @@ const answers = document.querySelectorAll('li.board__answer');
 const checks = document.querySelectorAll('li.board__check');
 const guess = document.querySelectorAll('li.board__guess');
 let ctr = 0;
-let ctr2 = 0;
 
 // Get background color of button just clicked
 function getBgColor(element) 
@@ -98,56 +97,81 @@ function getBgColor(element)
     return color;
 }
 
+function checkWin(startingId) {
+    let count = 0;
+    for (let i = 0; i < 4; i++)  {
+        if (getBgColor(checks[startingId - i]) == 'rgb(0, 0, 0)') {
+            count++;
+        }
+    }
+
+    return count == 4;
+}
+
 // Change color of one circle in the row
 function copyColor(source) {
     let color = getBgColor(source);
+    let tempGuess = ctr % 4; // Corresponds to circles in the row
+    
+    guess[39-ctr].style.backgroundColor = color;
 
-    if (ctr < 40 && ctr2 < 40) {
-        let tempGuess = ctr % 4;
-    
-        guess[39-ctr].style.backgroundColor = color;
-    
-        if (tempGuess == 3) {
-            setTimeout(() => {
-                evaluateRow();
-            }, 700);
-        }
-    
-        ctr++;
-    } else {
-        answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
+    if (tempGuess == 3) {
+        evaluateRow();
     }
+
+    ctr++;
 }
 
 function evaluateRow() {
     let guessCount = ctr;
     let finalAnswerCopy = JSON.parse(JSON.stringify(finalAnswer)); // Create deep copy of answers to prevent changing it
+    let count = 0;
+    let index;
 
-    while (ctr2 < ctr) {
-        let guessCol = getBgColor(guess[40-guessCount]);
-        let ansCol = answers[guessCount % 4].getAttribute('data-color');
+    while (count < 4) {
+        index = 39 - guessCount;
+        let guessCol = getBgColor(guess[index]);
+        let ansCol = answers[(index) % 4].getAttribute('data-color');
+
 
         if (guessCol == ansCol && finalAnswerCopy[guessCol] > 0) {
-            checks[39-ctr2].style.backgroundColor = 'black';
+            checks[index].style.backgroundColor = 'black';
             finalAnswerCopy[guessCol]--;
         } else if (colors.includes(guessCol) && finalAnswerCopy[guessCol] > 0) {
-            checks[39-ctr2].style.backgroundColor = 'white';
+            checks[index].style.backgroundColor = 'white';
             finalAnswerCopy[guessCol]--;
         } else {
-            checks[39-ctr2].style.backgroundColor = 'brown';
+            checks[index].style.backgroundColor = 'brown';
         }
 
-        ctr2++;
+        count++;
         guessCount--;
     }
-    console.log(finalAnswer);
-    console.log(finalAnswerCopy);
-    console.log("\n");
+
+    if (ctr == 39) {
+        alert("You have lost!");
+        answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
+    } else if (checkWin(index)) {
+        alert("You have won!");
+        answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
+    }
 }
 
 /*
 TO-DO
-2. Have checkers assess whether given row's guesses = correct
-    - Take into account that colors can repeat in the final answer (count instances in final answer)
-3. End game early if correct answer = achieved before 10 tries
+1. Change UI
+    - Change location of options (to the side instead of on the bottom)
+    - Change color of the table
+    - Design the game title
+2. Regarding refreshing
+    - Have page refresh automatically when game ends
+    - Have restart button
+3. Clean up code
+    - Get rid of unnecessary variables
+    - Get rid of comments
+4. Documentation
+    - Comment everything
+    - Create markdown (follow FrontendMentor style?)
+    - Push changes to local repo
+
 */
