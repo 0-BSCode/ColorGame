@@ -1,9 +1,16 @@
 const boardHead = document.querySelector('div.board__header');
 const boardBody = document.querySelector('div.board__body');
 const colorBtns = document.querySelectorAll('button.colors__btn');
+const colors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)",
+                "rgb(255, 165, 0)", "rgb(255, 192, 203)", "rgb(255, 255, 0)"];
+const finalAnswer = {};
 
-console.log(colorBtns);
-colorBtns.forEach(btn => btn.addEventListener('click', () => getBgColor(btn)));
+colorBtns.forEach(btn => btn.addEventListener('click', () => copyColor(btn)));
+
+function randomColor() {
+    let index = Math.floor(Math.random() * colors.length);
+    return colors[index];
+}
 
 function generateAnswers() {
     let list = document.createElement('ul');
@@ -11,6 +18,16 @@ function generateAnswers() {
     for (let i=0; i<4; i++) {
         let listItem = document.createElement('li');
         listItem.classList.add('board__big-circle');
+        listItem.style.backgroundColor = 'black';
+
+        let color = randomColor();
+        if (Object.keys(finalAnswer).includes(color)) {
+            finalAnswer[color]++;
+        } else {
+            finalAnswer[color] = 1;
+        }
+
+        listItem.setAttribute('data-color', color);
         listItem.classList.add('board__answer');
         listItem.setAttribute('data-id', i);
         list.appendChild(listItem);
@@ -78,40 +95,59 @@ function getBgColor(element)
         color = elementStyle.getPropertyValue("background-color");
     }
     // Return 0 if both methods failed.  
-    changeColor(color);
+    return color;
 }
 
 // Change color of one circle in the row
-function changeColor(color) {
+function copyColor(source) {
+    let color = getBgColor(source);
+
     if (ctr < 40 && ctr2 < 40) {
         let tempGuess = ctr % 4;
-        let tempCheck = 0;
     
         guess[39-ctr].style.backgroundColor = color;
     
         if (tempGuess == 3) {
             setTimeout(() => {
-                while (tempCheck < 4) {
-                    resetColor(checks[39-ctr2]);
-                    tempCheck++;
-                    ctr2++;
-                }
-            }, 1000);
+                evaluateRow();
+            }, 700);
         }
     
         ctr++;
     } else {
-        alert("GAME FINISHED");
+        answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
     }
 }
 
-function resetColor(elem) {
-    elem.style.backgroundColor = 'black';
+function evaluateRow() {
+    let guessCount = ctr;
+    let finalAnswerCopy = JSON.parse(JSON.stringify(finalAnswer)); // Create deep copy of answers to prevent changing it
+
+    while (ctr2 < ctr) {
+        let guessCol = getBgColor(guess[40-guessCount]);
+        let ansCol = answers[guessCount % 4].getAttribute('data-color');
+
+        if (guessCol == ansCol && finalAnswerCopy[guessCol] > 0) {
+            checks[39-ctr2].style.backgroundColor = 'black';
+            finalAnswerCopy[guessCol]--;
+        } else if (colors.includes(guessCol) && finalAnswerCopy[guessCol] > 0) {
+            checks[39-ctr2].style.backgroundColor = 'white';
+            finalAnswerCopy[guessCol]--;
+        } else {
+            checks[39-ctr2].style.backgroundColor = 'brown';
+        }
+
+        ctr2++;
+        guessCount--;
+    }
+    console.log(finalAnswer);
+    console.log(finalAnswerCopy);
+    console.log("\n");
 }
 
 /*
 TO-DO
-1. Randomly generate final answer for top circles at start
 2. Have checkers assess whether given row's guesses = correct
+    - Take into account that colors can repeat in the final answer (count instances in final answer)
 3. End game early if correct answer = achieved before 10 tries
 */
