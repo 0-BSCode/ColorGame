@@ -10,29 +10,36 @@
 <body>
     <h1 class="title">Guess The Color!</h1>
     <div class="board">
-        <div class="board__header"></div>
+        <div class="board__header">
+            <div class="board__whitespace"></div>
+        </div>
         <div class="board__body"></div>
     </div>
-    <ul class="colors">
-        <li class="colors__item">
-            <button class="colors__btn colors__btn--red"></button>
-        </li>
-        <li class="colors__item">
-            <button class="colors__btn colors__btn--green"></button>
-        </li>
-        <li class="colors__item">
-            <button class="colors__btn colors__btn--pink"></button>
-        </li>
-        <li class="colors__item">
-            <button class="colors__btn colors__btn--yellow"></button>
-        </li>
-        <li class="colors__item">
-            <button class="colors__btn colors__btn--blue"></button>
-        </li>
-        <li class="colors__item">
-            <button class="colors__btn colors__btn--orange"></button>
-        </li>
-    </ul>
+    <div class="footer">
+        <ul class="footer__colors">
+            <li class="footer__color-item">
+                <button class="footer__color-btn footer__color-btn--red"></button>
+            </li>
+            <li class="footer__color-item">
+                <button class="footer__color-btn footer__color-btn--green"></button>
+            </li>
+            <li class="footer__color-item">
+                <button class="footer__color-btn footer__color-btn--pink"></button>
+            </li>
+            <li class="footer__color-item">
+                <button class="footer__color-btn footer__color-btn--yellow"></button>
+            </li>
+            <li class="footer__color-item">
+                <button class="footer__color-btn footer__color-btn--blue"></button>
+            </li>
+            <li class="footer__color-item">
+                <button class="footer__color-btn footer__color-btn--orange"></button>
+            </li>
+        </ul>
+        <button class="footer__reset">
+            RESET
+        </button>
+    </div>
     <script src="./app.js"></script>
 </body>
 </html>
