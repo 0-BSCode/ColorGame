@@ -5,7 +5,7 @@ const colors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)",
                 "rgb(255, 165, 0)", "rgb(255, 192, 203)", "rgb(255, 255, 0)"];
 const finalAnswer = {};
 
-colorBtns.forEach(btn => btn.addEventListener('click', () => copyColor(btn)));
+colorBtns.forEach(btn => btn.addEventListener('click', () => exportColor(btn)));
 
 function randomColor() {
     let index = Math.floor(Math.random() * colors.length);
@@ -109,7 +109,7 @@ function checkWin(startingId) {
 }
 
 // Change color of one circle in the row
-function copyColor(source) {
+function exportColor(source) {
     let color = getBgColor(source);
     let tempGuess = ctr % 4; // Corresponds to circles in the row
     
@@ -123,38 +123,81 @@ function copyColor(source) {
 }
 
 function evaluateRow() {
-    let guessCount = ctr;
     let finalAnswerCopy = JSON.parse(JSON.stringify(finalAnswer)); // Create deep copy of answers to prevent changing it
-    let count = 0;
-    let index;
+    let answerKeys = Object.keys(finalAnswer); // Get answer key to check if guesses are in them
+    
+    let guessCount = ctr; // Demarcates index of circle that starts specific guess row
+    let checkIndex = 39 - ctr; // Demarcates index of circle that starts specific check row
+    let checkItr = 0; // Counts how many circles in the check row we've gone through already
 
-    while (count < 4) {
-        index = 39 - guessCount;
+    let index; // Goes over every guess circle in each for loop to check for whites and blacks
+    let loopItr;
+
+    
+    for (loopItr = 0; loopItr < 4; loopItr++) {
+        index = 39-guessCount; // Go to circle in the row
+        let guessCol = getBgColor(guess[index]); // Get circle's color
+
+        // Get color of answer circle that's in the same column as guess circle
+        let ansCol = answers[(index) % 4].getAttribute('data-color');
+
+        // Check to see if iterator over check circles is less than 4
+        if (checkItr < 4) {
+
+            // If circle colors match and it hasn't appeared an excessive
+            // amount of times yet
+            if (guessCol == ansCol && finalAnswerCopy[guessCol] > 0) {
+                checks[checkIndex].style.backgroundColor = 'black';
+                finalAnswerCopy[guessCol]--;
+                checkIndex++; // Go to next check circle
+                checkItr++; // Go to  next check circle
+            }
+        }
+
+        guessCount--;
+    }
+
+    // Reset guessCount to go over all the guess circles to check for whites
+    guessCount = ctr;
+
+    for (loopItr = 0; loopItr < 4; loopItr++) {
+        index = 39-guessCount;
         let guessCol = getBgColor(guess[index]);
         let ansCol = answers[(index) % 4].getAttribute('data-color');
 
 
-        if (guessCol == ansCol && finalAnswerCopy[guessCol] > 0) {
-            checks[index].style.backgroundColor = 'black';
-            finalAnswerCopy[guessCol]--;
-        } else if (colors.includes(guessCol) && finalAnswerCopy[guessCol] > 0) {
-            checks[index].style.backgroundColor = 'white';
-            finalAnswerCopy[guessCol]--;
-        } else {
-            checks[index].style.backgroundColor = 'brown';
-        }
+        // Check to see if iterator over check circles is less than 4
+        if (checkItr < 4) {
+            
+            // Guess color isn't the correct answer but it's part of the answers and has
+            // yet to appear an excessive amount of times
+            if (guessCol != ansCol && answerKeys.includes(guessCol)
+                && finalAnswerCopy[guessCol] > 0) {
+                console.log("Check Index: " + checkIndex);
+                checks[checkIndex].style.backgroundColor = 'white';
+                finalAnswerCopy[guessCol]--;
+                checkIndex++;
+                checkItr++;
+            }
 
-        count++;
+        }
         guessCount--;
     }
 
-    if (ctr == 39) {
+    // Turn remaining uncolored circles into brown ones
+    while(checkItr < 4) {
+        checks[checkIndex].style.backgroundColor = 'brown';
+        checkIndex++;
+        checkItr++;
+    }
+
+    if (ctr == 39) { // All rows have been used up
         alert("You have lost!");
         answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
-    } else if (checkWin(index)) {
+    } else if (checkWin(index)) { // If 4 check circles = black, you win
         alert("You have won!");
         answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
-    }
+    } // If none of the conditions are met, game continues
 }
 
 /*
@@ -169,9 +212,16 @@ TO-DO
 3. Clean up code
     - Get rid of unnecessary variables
     - Get rid of comments
+    - Have check circles colored in such a way that it doesn't give away order of answers
+        - PRIORITIZE (current algorithm is inaccurate)
+        - Answer: Pink / Yellow / Yellow / Orange
+        - Input: Orange / Yellow / Yellow / Orange
+        - Actual Output: White / Black / Black / Brown
+        - Expected Output: Brown / Black / Black / Black
+        - What's wrong = When it encounters orange for the first time, it subtracts count from finalAnswers, so it won't consider any other orange (even if latter orange = correct)
+        - SOLUTION: Check which cells might be black -> check which cells might be white -> color rest brown
 4. Documentation
     - Comment everything
     - Create markdown (follow FrontendMentor style?)
     - Push changes to local repo
-
 */
