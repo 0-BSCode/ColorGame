@@ -7,14 +7,19 @@ const finalAnswer = {};
 
 colorBtns.forEach(btn => btn.addEventListener('click', () => exportColor(btn)));
 
+// Return random color from colors variable
 function randomColor() {
     let index = Math.floor(Math.random() * colors.length);
     return colors[index];
 }
 
+// Generate answer circles for the game
 function generateAnswers() {
+    // Initialize an unordered list element
     let list = document.createElement('ul');
     list.classList.add('board__answer-list');
+
+    // Create circle list elements
     for (let i=0; i<4; i++) {
         let listItem = document.createElement('li');
         listItem.classList.add('board__big-circle');
@@ -27,21 +32,25 @@ function generateAnswers() {
             finalAnswer[color] = 1;
         }
 
-        listItem.setAttribute('data-color', color);
         listItem.classList.add('board__answer');
+        listItem.setAttribute('data-color', color);
         listItem.setAttribute('data-id', i);
         list.appendChild(listItem);
     }
+
+    // Attach list to board head
     boardHead.appendChild(list);
 }
 
+// Generate the check and guess circles of the board
 function generateBoard() {
-    let checkId = 0;
-    let guessId = 0;
+    let checkId = 0; // ID for the check circles
+    let guessId = 0; // ID for the guess circles
 
-    for (let row = 0; row < 10; row++) {
+    for (let row = 0; row < 10; row++) { // Create 10 rows
 
-        let ctr = 0;
+        let ctr = 0; // Counter for number of circles per row
+
         // Generate check and guess list
         let checkList = document.createElement('ul');
         checkList.classList.add('board__check-list');
@@ -49,7 +58,9 @@ function generateBoard() {
         let guessList = document.createElement('ul');
         guessList.classList.add('board__guess-list');
 
-        while(ctr < 4) {
+        while(ctr < 4) { // Create 4 circles in each row
+
+            // Create check and guess cell
             let checkCell = document.createElement('li');
             checkCell.classList.add('board__small-circle');
             checkCell.classList.add('board__check');
@@ -67,6 +78,7 @@ function generateBoard() {
             ctr++;
         }
 
+        // Append check list and guess list to board body
         boardBody.appendChild(checkList);
         boardBody.appendChild(guessList);
 
@@ -76,9 +88,12 @@ function generateBoard() {
 generateAnswers();
 generateBoard();
 
+// Get all circles
 const answers = document.querySelectorAll('li.board__answer');
 const checks = document.querySelectorAll('li.board__check');
 const guess = document.querySelectorAll('li.board__guess');
+
+// Counter to go through the check and guess circles
 let ctr = 0;
 
 // Get background color of button just clicked
@@ -97,6 +112,8 @@ function getBgColor(element)
     return color;
 }
 
+// Check if player won
+// Win Con: If 4 check circles of each row are black
 function checkWin(startingId) {
     let count = 0;
     for (let i = 0; i < 4; i++)  {
@@ -111,15 +128,16 @@ function checkWin(startingId) {
 // Change color of one circle in the row
 function exportColor(source) {
     let color = getBgColor(source);
-    let tempGuess = ctr % 4; // Corresponds to circles in the row
     
+    // Set color of guess circle to color of button just clicked
     guess[39-ctr].style.backgroundColor = color;
 
-    if (tempGuess == 3) {
+    // If 4 guess circles in the row have been color-changed, evaluate the row
+    if (ctr % 4 == 3) { 
         evaluateRow();
     }
 
-    ctr++;
+    ctr++; // 
 }
 
 function evaluateRow() {
@@ -209,19 +227,7 @@ TO-DO
 2. Regarding refreshing
     - Have page refresh automatically when game ends
     - Have restart button
-3. Clean up code
-    - Get rid of unnecessary variables
-    - Get rid of comments
-    - Have check circles colored in such a way that it doesn't give away order of answers
-        - PRIORITIZE (current algorithm is inaccurate)
-        - Answer: Pink / Yellow / Yellow / Orange
-        - Input: Orange / Yellow / Yellow / Orange
-        - Actual Output: White / Black / Black / Brown
-        - Expected Output: Brown / Black / Black / Black
-        - What's wrong = When it encounters orange for the first time, it subtracts count from finalAnswers, so it won't consider any other orange (even if latter orange = correct)
-        - SOLUTION: Check which cells might be black -> check which cells might be white -> color rest brown
-4. Documentation
-    - Comment everything
+3. Documentation
     - Create markdown (follow FrontendMentor style?)
     - Push changes to local repo
 */
