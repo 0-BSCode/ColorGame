@@ -1,11 +1,14 @@
 const boardHead = document.querySelector('div.board__header');
 const boardBody = document.querySelector('div.board__body');
-const colorBtns = document.querySelectorAll('button.colors__btn');
+const colorBtns = document.querySelectorAll('button.footer__color-btn');
+const header = document.querySelector('h1.title');
+const resetBtn = document.querySelector('button.footer__reset');
 const colors = ["rgb(255, 0, 0)", "rgb(0, 255, 0)", "rgb(0, 0, 255)",
                 "rgb(255, 165, 0)", "rgb(255, 192, 203)", "rgb(255, 255, 0)"];
 const finalAnswer = {};
 
 colorBtns.forEach(btn => btn.addEventListener('click', () => exportColor(btn)));
+resetBtn.addEventListener('click', () => window.location.reload());
 
 // Return random color from colors variable
 function randomColor() {
@@ -191,7 +194,6 @@ function evaluateRow() {
             // yet to appear an excessive amount of times
             if (guessCol != ansCol && answerKeys.includes(guessCol)
                 && finalAnswerCopy[guessCol] > 0) {
-                console.log("Check Index: " + checkIndex);
                 checks[checkIndex].style.backgroundColor = 'white';
                 finalAnswerCopy[guessCol]--;
                 checkIndex++;
@@ -207,17 +209,22 @@ function evaluateRow() {
         checks[checkIndex].style.backgroundColor = 'brown';
         checkIndex++;
         checkItr++;
-    }
+    }   
 
-    if (ctr == 39) { // All rows have been used up
-        alert("You have lost!");
-        answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
-    } else if (checkWin(index)) { // If 4 check circles = black, you win
-        alert("You have won!");
-        answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
+    // Check for win first in case player gets it right on last row
+    if (checkWin(index)) { // If 4 check circles = black, you win
+        header.textContent = "You win!";
+        renderEnd();
+    } else if (ctr == 39) { // All rows have been used up
+        header.textContent = "You lose!";
+        renderEnd();
     } // If none of the conditions are met, game continues
 }
 
+function renderEnd() {
+    answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
+    colorBtns.forEach(btn => btn.disabled = true);
+}
 /*
 TO-DO
 1. Change UI
