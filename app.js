@@ -225,16 +225,3 @@ function renderEnd() {
     answers.forEach(answer => answer.style.backgroundColor = answer.getAttribute('data-color'));
     colorBtns.forEach(btn => btn.disabled = true);
 }
-/*
-TO-DO
-1. Change UI
-    - Change location of options (to the side instead of on the bottom)
-    - Change color of the table
-    - Design the game title
-2. Regarding refreshing
-    - Have page refresh automatically when game ends
-    - Have restart button
-3. Documentation
-    - Create markdown (follow FrontendMentor style?)
-    - Push changes to local repo
-*/
